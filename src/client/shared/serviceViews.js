@@ -269,7 +269,7 @@ const serviceViews = {
       `;
 
       this.model = {
-        instructions: 'Define your position in the area',
+        instructions: 'UPDATE Define your position in the area',
         send: 'Send',
         showBtn: false,
       };
