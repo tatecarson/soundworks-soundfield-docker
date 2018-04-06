@@ -5,4 +5,4 @@ docker push tatecarson/soundworks-test-patch
 hyper rm -f soundworks-test-patch
 hyper pull tatecarson/soundworks-test-patch
 hyper run -d --name soundworks-test-patch -p 8000:8000 tatecarson/soundworks-test-patch
-hyper fip attach soundworks-test-patch
+hyper fip attach 209.177.90.179 soundworks-test-patch
