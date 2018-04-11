@@ -1,5 +1,4 @@
-import { Experience } from 'soundworks/server';
-
+import { Experience } from "soundworks/server";
 
 /**
  * The `SoundfieldExperience` makes the connection between the `soloist`
@@ -30,14 +29,16 @@ export default class SoundfieldExperience extends Experience {
 
     // the `shared-config` service is used by the `soloist` clients to get
     // informations from the server configuration
-    this.sharedConfig = this.require('shared-config');
+    this.sharedConfig = this.require("shared-config");
     // this instruction adds the sharing of the `setup` entry of the server
     // configuration as a requirement for `soloist`
-    this.sharedConfig.share('setup', 'soloist');
+    this.sharedConfig.share("setup", "soloist");
 
     // the `locator` service is required by the `player` clients to get their
     // approximative position into the defined area
-    this.locator = this.require('locator');
+    this.locator = this.require("locator");
+
+    this.audioBufferManager = this.require("audio-buffer-manager");
   }
 
   /**
@@ -50,10 +51,10 @@ export default class SoundfieldExperience extends Experience {
 
     // define what to do ccording to the `client` type (i.e. `player` or `soloist`)
     switch (client.type) {
-      case 'soloist':
+      case "soloist":
         this.onSoloistEnter(client);
         break;
-      case 'player':
+      case "player":
         this.onPlayerEnter(client);
         break;
     }
@@ -63,8 +64,7 @@ export default class SoundfieldExperience extends Experience {
    * Function called whenever a client exists its `Experience`.
    */
   exit(client) {
-    if (client.type === 'player')
-      this.onPlayerExit(client);
+    if (client.type === "player") this.onPlayerExit(client);
   }
 
   /**
@@ -72,11 +72,11 @@ export default class SoundfieldExperience extends Experience {
    */
   onSoloistEnter(client) {
     // send the list of connected players
-    const playerInfos = Array.from(this.players.values())
-    this.send(client, 'player:list', playerInfos);
+    const playerInfos = Array.from(this.players.values());
+    this.send(client, "player:list", playerInfos);
 
     // listen touch inputs from the `soloist` client
-    this.receive(client, 'input:change', (radius, coordinates) => {
+    this.receive(client, "input:change", (radius, coordinates) => {
       this.onInputChange(radius, coordinates);
     });
   }
@@ -90,7 +90,7 @@ export default class SoundfieldExperience extends Experience {
     // keep track of the informations
     this.players.set(client, infos);
     // send the informations of the new client to all the connected soloists
-    this.broadcast('soloist', null, 'player:add', infos);
+    this.broadcast("soloist", null, "player:add", infos);
   }
 
   /**
@@ -102,7 +102,7 @@ export default class SoundfieldExperience extends Experience {
     // delete it from the stack of client `player`
     this.players.delete(client);
     // send the informations of the exited client to all the connected soloists
-    this.broadcast('soloist', null, 'player:remove', infos);
+    this.broadcast("soloist", null, "player:remove", infos);
   }
 
   /**
@@ -116,7 +116,7 @@ export default class SoundfieldExperience extends Experience {
     return {
       id: client.uuid,
       x: client.coordinates[0],
-      y: client.coordinates[1],
+      y: client.coordinates[1]
     };
   }
 
@@ -137,20 +137,20 @@ export default class SoundfieldExperience extends Experience {
     // should be sent a `start` or `stop` message according to its previous
     // state and if it is or not in an zone that is excited by the soloist
     if (Object.keys(coordinates).length === 0) {
-      activePlayers.forEach((player) => this.send(player, 'stop'));
+      activePlayers.forEach(player => this.send(player, "stop"));
       activePlayers.clear();
     } else {
-      players.forEach((player) => {
+      players.forEach(player => {
         let inArea = false;
         const isActive = activePlayers.has(player);
 
         for (let id in coordinates) {
           const center = coordinates[id];
-          inArea = inArea || this.inArea(player.coordinates, center, sqrRadius);
+          inArea = inArea || this.inArea(player.coordinates, center, sqrRadius);
 
           if (inArea) {
             if (!isActive) {
-              this.send(player, 'start');
+              this.send(player, "start");
               activePlayers.add(player);
             }
 
@@ -159,7 +159,7 @@ export default class SoundfieldExperience extends Experience {
         }
 
         if (isActive && !inArea) {
-          this.send(player, 'stop');
+          this.send(player, "stop");
           activePlayers.delete(player);
         }
       });

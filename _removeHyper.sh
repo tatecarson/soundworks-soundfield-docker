@@ -1,5 +1,5 @@
 #!/bin/bash
 
-hyper stop soundfield
-hyper rm soundfield
-hyper rmi tatecarson/soundfield
+hyper stop soundworks-test-patch
+hyper rm soundworks-test-patch
+hyper rmi tatecarson/soundworks-test-patch
